@@ -1,13 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --app-bg: #000000;
-  --app-fg: #ffffff;
+  --app-bg: #09090b;
+  --card-bg: #141416;
+  --card-subtle: #1c1c20;
+  --border-main: #27272a;
+  --border-subtle: #3f3f46;
+  --border-active: #ffffff;
+  --text-main: #ffffff;
+  --text-sub: #a1a1aa;
+  --text-dim: #71717a;
+  --accent-white: #ffffff;
+  --accent-active: #ffffff;
+  --muted-slot: #18181b;
+  --shadow-color: rgba(0, 0, 0, 0.8);
+  --hard-shadow: 3px 3px 0px #000000;
+  --pill-active-bg: #ffffff;
+  --pill-active-text: #000000;
 }
 
 [data-theme='light'] {
-  --app-bg: #ffffff;
-  --app-fg: #000000;
+  --app-bg: #f8f9fa;
+  --card-bg: #ffffff;
+  --card-subtle: #f1f3f5;
+  --border-main: #e2e8f0;
+  --border-subtle: #cbd5e1;
+  --border-active: #09090b;
+  --text-main: #09090b;
+  --text-sub: #475569;
+  --text-dim: #94a3b8;
+  --accent-white: #000000;
+  --accent-active: #09090b;
+  --muted-slot: #f1f5f9;
+  --shadow-color: rgba(0, 0, 0, 0.15);
+  --hard-shadow: 3px 3px 0px #09090b;
+  --pill-active-bg: #09090b;
+  --pill-active-text: #ffffff;
 }
 
 * {
@@ -32,11 +60,11 @@ body,
   overflow: hidden;
   overscroll-behavior: none;
   background-color: var(--app-bg);
-  color: var(--app-fg);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, monospace;
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Base App Shell Layout */
+/* App Viewport Container */
 .app-viewport {
   position: relative;
   width: 100%;
@@ -47,136 +75,325 @@ body,
   justify-content: space-between;
   align-items: center;
   background-color: var(--app-bg);
-  color: var(--app-fg);
-  padding-top: max(10px, env(safe-area-inset-top));
-  padding-bottom: max(14px, env(safe-area-inset-bottom));
-  padding-left: max(14px, env(safe-area-inset-left));
-  padding-right: max(14px, env(safe-area-inset-right));
+  color: var(--text-main);
+  padding-top: max(8px, env(safe-area-inset-top));
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  padding-left: max(12px, env(safe-area-inset-left));
+  padding-right: max(12px, env(safe-area-inset-right));
   overflow: hidden;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* GPU-Accelerated Beat Pulse on Viewport Border */
+/* Beat Pulse on App Container */
 @keyframes beatPulse {
   0% {
-    box-shadow: inset 0 0 0 3px var(--app-fg);
+    box-shadow: inset 0 0 0 2px var(--border-active);
   }
   100% {
-    box-shadow: inset 0 0 0 0px var(--app-fg);
+    box-shadow: inset 0 0 0 0px transparent;
   }
 }
 
 .beat-pulse-active {
-  animation: beatPulse 0.12s ease-out forwards;
+  animation: beatPulse 0.14s ease-out forwards;
 }
 
 /* Header */
 .app-header {
   width: 100%;
-  max-width: 360px;
+  max-width: 380px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding: 2px 6px;
+  align-items: center;
+  padding: 2px 4px;
 }
 
-.header-center {
+/* Buttons with Clean Neo-Brutalist Shadow */
+.brutal-btn {
+  border: 1.5px solid var(--border-main);
+  background-color: var(--card-bg);
+  color: var(--text-main);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 2.5px 2.5px 0px var(--border-active);
+  transition: transform 0.06s ease, box-shadow 0.06s ease, background-color 0.15s ease;
+}
+
+.brutal-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0.5px 0.5px 0px var(--border-active);
+}
+
+.brutal-btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+}
+
+.brutal-btn-bpm {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+/* Beat Conductor Bar */
+.conductor-card {
+  width: 100%;
+  max-width: 360px;
+  background-color: var(--card-bg);
+  border: 1.5px solid var(--border-main);
+  border-radius: 8px;
+  padding: 8px 10px;
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  box-shadow: 3px 3px 0px var(--border-active);
+  margin-bottom: 4px;
+}
+
+.conductor-top-row {
+  display: flex;
   align-items: center;
-  gap: 1px;
+  justify-content: space-between;
 }
 
-.node-number {
-  font-family: monospace;
-  font-size: 15px;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  opacity: 0.9;
-}
-
-.anchor-symbol {
-  font-family: monospace;
-  font-size: 11px;
-  line-height: 1;
-  font-weight: 900;
-}
-
-.chord-buttons-row {
+.now-playing-badge {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 3px;
 }
 
-/* Active Chord Current Banner */
-.active-chord-banner {
+.chord-hero-tag {
+  background-color: var(--pill-active-bg);
+  color: var(--pill-active-text);
+  font-family: monospace;
+  font-size: 20px;
+  font-weight: 900;
+  padding: 2px 12px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  box-shadow: 1.5px 1.5px 0px var(--border-active);
+}
+
+.strum-action-pill {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background-color: var(--card-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+}
+
+.conductor-right-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.measure-tag {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background-color: var(--card-subtle);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  letter-spacing: 0.05em;
+}
+
+.next-chord-preview {
+  font-size: 11px;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+/* Real-Time Live Banner */
+.conductor-live-banner {
+  background-color: var(--card-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  padding: 5px 8px;
+  min-height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-bottom: 2px;
+  transition: all 0.1s ease;
 }
 
-.active-chord-pill {
-  padding: 2px 14px;
-  border: 2px solid currentColor;
-  background-color: currentColor;
-  color: var(--app-bg);
-  font-family: monospace;
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  box-shadow: 2px 2px 0px 0px currentColor;
+.conductor-live-banner.active {
+  background-color: var(--card-bg);
+  border-color: var(--border-active);
+  box-shadow: 1.5px 1.5px 0px var(--border-active);
 }
 
-.measure-beat-dots {
+.live-banner-content {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
 }
 
-.measure-beat-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  border: 1.5px solid currentColor;
-  background-color: transparent;
-  transition: background-color 0.05s ease;
+.live-banner-content.idle {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-dim);
 }
 
-.measure-beat-dot.active {
-  background-color: currentColor;
+.live-beat-badge {
+  background-color: var(--pill-active-bg);
+  color: var(--pill-active-text);
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 1px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
 }
 
-/* Fretboard Section */
+.live-action-text {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--text-main);
+}
+
+.switch-warning {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--pill-active-bg);
+  margin-left: auto;
+  animation: pulseWarning 0.5s infinite alternate;
+}
+
+@keyframes pulseWarning {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* 4-Beat Measure Strip */
+.beats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+
+.beat-tile {
+  background-color: var(--card-subtle);
+  border: 1px solid var(--border-main);
+  border-radius: 5px;
+  padding: 4px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all 0.08s ease;
+}
+
+.beat-tile.active {
+  background-color: var(--pill-active-bg);
+  color: var(--pill-active-text);
+  border-color: var(--border-active);
+  transform: scale(1.04);
+  box-shadow: 2px 2px 0px var(--border-active);
+}
+
+.beat-tile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.beat-num {
+  font-family: monospace;
+  font-size: 10px;
+  font-weight: 800;
+  opacity: 0.75;
+}
+
+.beat-time {
+  font-family: monospace;
+  font-size: 9px;
+  font-weight: 700;
+  opacity: 0.6;
+}
+
+.beat-action {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 900;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Main Area */
 .app-main {
   width: 100%;
-  max-width: 360px;
+  max-width: 380px;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0;
 }
 
-/* Footer Controls */
-.app-footer {
+/* Fretboard Card Wrapper */
+.fretboard-card {
   width: 100%;
   max-width: 360px;
+  background-color: var(--card-bg);
+  border: 1.5px solid var(--border-main);
+  border-radius: 8px;
+  padding: 8px 6px 4px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 3px 3px 0px var(--border-active);
+}
+
+/* Footer Area */
+.app-footer {
+  width: 100%;
+  max-width: 380px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
 }
 
 .bpm-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 24px;
+}
+
+.bpm-value-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
 }
 
 .bpm-value {
@@ -184,88 +401,49 @@ body,
   font-size: 28px;
   font-weight: 900;
   letter-spacing: 0.05em;
-  width: 64px;
-  text-align: center;
+  line-height: 1;
 }
 
-/* Neo-Brutalist Buttons with Shadows */
-.brutal-btn {
-  border: 2px solid currentColor;
-  background-color: var(--app-bg);
-  color: currentColor;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 3px 3px 0px 0px currentColor;
-  transition: transform 0.06s ease, box-shadow 0.06s ease;
-  will-change: transform, box-shadow;
+.bpm-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-transform: uppercase;
 }
 
-.brutal-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px 0px currentColor;
-}
-
-.brutal-btn-icon {
-  width: 40px;
-  height: 40px;
-}
-
-.brutal-btn-bpm {
-  width: 46px;
-  height: 46px;
-  font-family: monospace;
-  font-size: 24px;
-  font-weight: 900;
-}
-
-.brutal-btn-chord {
-  min-width: 44px;
-  height: 40px;
-  padding: 0 10px;
-  font-family: monospace;
-  font-size: 16px;
-  font-weight: 900;
-}
-
-.brutal-btn-chord.active {
-  background-color: currentColor;
-  color: var(--app-bg);
-}
-
-/* Large Circular Play / Timer Button */
+/* Play / Timer Container */
 .play-timer-container {
   position: relative;
-  width: 88px;
-  height: 88px;
+  width: 86px;
+  height: 86px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .play-timer-btn {
-  width: 86px;
-  height: 86px;
+  width: 84px;
+  height: 84px;
   border-radius: 50%;
-  border: 3.5px solid currentColor;
-  background-color: var(--app-bg);
-  color: currentColor;
+  border: 3px solid var(--border-active);
+  background-color: var(--card-bg);
+  color: var(--text-main);
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 4px 4px 0px 0px currentColor;
+  box-shadow: 3.5px 3.5px 0px var(--border-active);
   transition: transform 0.06s ease, box-shadow 0.06s ease;
   overflow: visible;
 }
 
 .play-timer-btn:active {
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px 0px currentColor;
+  box-shadow: 1.5px 1.5px 0px var(--border-active);
 }
 
-/* 3-Step Numbered Buttons */
+/* 3-Step Buttons */
 .step-dots-row {
   display: flex;
   align-items: center;
@@ -274,26 +452,26 @@ body,
 }
 
 .step-dot-btn {
-  width: 22px;
-  height: 22px;
-  border-radius: 3px;
-  border: 1.5px solid currentColor;
-  background-color: transparent;
-  color: currentColor;
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-main);
+  background-color: var(--card-bg);
+  color: var(--text-dim);
   font-family: monospace;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 800;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
   cursor: pointer;
-  box-shadow: 1.5px 1.5px 0px 0px currentColor;
+  box-shadow: 1.5px 1.5px 0px var(--border-main);
   transition: all 0.1s ease;
 }
 
 .step-dot-btn.active {
-  background-color: currentColor;
-  color: var(--app-bg);
-  box-shadow: 2px 2px 0px 0px currentColor;
-  transform: scale(1.08);
+  border-color: var(--border-active);
+  background-color: var(--pill-active-bg);
+  color: var(--pill-active-text);
+  box-shadow: 2px 2px 0px var(--border-active);
+  font-weight: 900;
 }

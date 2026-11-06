@@ -43,7 +43,7 @@ export const CHORD_LIBRARY: Record<string, ChordShape> = {
   A: {
     name: 'A',
     strings: [-1, 0, 2, 2, 2, 0],
-    fingers: [null, null, 1, 2, 3, null],
+    fingers: [null, null, 2, 1, 3, null],
   },
   D: {
     name: 'D',
@@ -160,8 +160,7 @@ export const CURRICULUM: CurriculumNode[] = [
     type: 'chord-pair',
     chords: [CHORD_LIBRARY.E, CHORD_LIBRARY.A],
     anchorFinger: 1,
-    anchorString: 3, // G string
-    anchorFret: 1, // slides/anchors on G string
+    anchorString: 3, // G string (slide anchor)
     targetBpm: 60,
     targetReps: 25,
     strumPattern: ['D', '-', 'D', '-'],
