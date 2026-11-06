@@ -171,7 +171,7 @@ export const App: React.FC = () => {
 
   return (
     <div
-      className={`relative w-full h-[100dvh] max-h-[100dvh] flex flex-col justify-between items-center p-4 bg-[var(--app-bg,#000)] text-[var(--app-fg,#fff)] select-none transition-colors duration-150 ${
+      className={`relative w-full h-[100dvh] max-h-[100dvh] flex flex-col justify-between items-center safe-area-container bg-[var(--app-bg,#000)] text-[var(--app-fg,#fff)] select-none transition-colors duration-150 ${
         isPulseActive ? 'beat-pulse-active' : ''
       }`}
     >
