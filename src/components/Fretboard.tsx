@@ -25,17 +25,16 @@ export const Fretboard: React.FC<FretboardProps> = ({
   const baseFret = chord.baseFret || 1;
   const numFrets = 5;
 
-  // Vertical layout dimensions
-  const width = 280;
-  const height = 340;
-  const startX = 40;
-  const endX = 240;
-  const stringSpacing = (endX - startX) / 5; // 40px between strings
-  const startY = 70;
-  const endY = 320;
-  const fretSpacing = (endY - startY) / numFrets; // 50px between frets
+  // Geometry
+  const width = 260;
+  const height = 330;
+  const startX = 30;
+  const endX = 230;
+  const stringSpacing = (endX - startX) / 5; // exactly 40px
+  const startY = 62;
+  const endY = 312;
+  const fretSpacing = (endY - startY) / numFrets; // exactly 50px
 
-  // Low E is index 0 (left), High e is index 5 (right)
   const getStringX = (index: number) => startX + index * stringSpacing;
   const getFretY = (fretIndex: number) => startY + fretIndex * fretSpacing;
   const getNoteY = (fret: number) => {
@@ -43,11 +42,9 @@ export const Fretboard: React.FC<FretboardProps> = ({
     return startY + (relFret - 0.5) * fretSpacing;
   };
 
-  // String thicknesses (low E thickest to high E thinnest)
-  const stringThicknesses = [3.8, 3.2, 2.6, 2.0, 1.5, 1.2];
+  const stringThicknesses = [3.6, 3.0, 2.4, 1.8, 1.4, 1.0];
 
   if (mode === 'horizontal' && activeArpeggioStep) {
-    // Horizontal arpeggio view for Phase V string-skipping
     const hWidth = 320;
     const hHeight = 220;
     const hStartX = 50;
@@ -58,8 +55,10 @@ export const Fretboard: React.FC<FretboardProps> = ({
 
     return (
       <div
-        className="w-full flex justify-center items-center py-2 transition-all duration-150"
         style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
           filter: hasShadow ? 'drop-shadow(3px 3px 0px currentColor)' : undefined,
         }}
       >
@@ -67,9 +66,8 @@ export const Fretboard: React.FC<FretboardProps> = ({
           width={hWidth}
           height={hHeight}
           viewBox={`0 0 ${hWidth} ${hHeight}`}
-          className="select-none overflow-visible"
+          style={{ overflow: 'visible', userSelect: 'none' }}
         >
-          {/* Fret vertical bars */}
           {[1, 2, 3, 4, 5].map((fret) => {
             const fx = hStartX + (fret - 1) * 50;
             return (
@@ -80,13 +78,13 @@ export const Fretboard: React.FC<FretboardProps> = ({
                   x2={fx}
                   y2={hEndY}
                   stroke="currentColor"
-                  strokeWidth={fret === 1 ? 4 : 1.2}
+                  strokeWidth={fret === 1 ? 4 : 1.5}
                 />
                 <text
                   x={fx + 25}
                   y={hStartY - 10}
                   fill="currentColor"
-                  fontSize="11"
+                  fontSize="12"
                   fontWeight="bold"
                   fontFamily="monospace"
                   textAnchor="middle"
@@ -96,20 +94,18 @@ export const Fretboard: React.FC<FretboardProps> = ({
               </g>
             );
           })}
-          {/* Last fret line */}
           <line
             x1={hStartX + 5 * 50}
             y1={hStartY}
             x2={hStartX + 5 * 50}
             y2={hEndY}
             stroke="currentColor"
-            strokeWidth="1.2"
+            strokeWidth="1.5"
           />
 
-          {/* 6 horizontal strings */}
           {STRING_NAMES.map((name, i) => {
-            const sy = hStartY + (5 - i) * hStringSpacing; // low E at bottom, high e at top
-            const isTargetString = activeArpeggioStep.stringIndex === i;
+            const sy = hStartY + (5 - i) * hStringSpacing;
+            const isTarget = activeArpeggioStep.stringIndex === i;
             return (
               <g key={`hstr-${i}`}>
                 <text
@@ -130,20 +126,17 @@ export const Fretboard: React.FC<FretboardProps> = ({
                   y2={sy}
                   stroke="currentColor"
                   strokeWidth={stringThicknesses[i]}
-                  strokeDasharray={isTargetString ? undefined : undefined}
-                  opacity={isTargetString ? 1 : 0.4}
+                  opacity={isTarget ? 1 : 0.45}
                 />
               </g>
             );
           })}
 
-          {/* Active plucked note */}
           {(() => {
             const stringIdx = activeArpeggioStep.stringIndex;
             const fret = activeArpeggioStep.fret;
             const sy = hStartY + (5 - stringIdx) * hStringSpacing;
             if (fret === 0) {
-              // Open string pluck
               return (
                 <circle
                   cx={hStartX - 32}
@@ -159,11 +152,11 @@ export const Fretboard: React.FC<FretboardProps> = ({
             const fx = hStartX + (relFret - 0.5) * 50;
             return (
               <g>
-                <circle cx={fx} cy={sy} r="15" fill="currentColor" />
+                <circle cx={fx} cy={sy} r="14" fill="currentColor" />
                 <circle cx={fx} cy={sy} r="18" fill="none" stroke="currentColor" strokeWidth="1.5" />
                 <text
                   x={fx}
-                  y={sy + 5}
+                  y={sy + 4.5}
                   fill="var(--app-bg, #000)"
                   fontSize="12"
                   fontWeight="bold"
@@ -182,8 +175,10 @@ export const Fretboard: React.FC<FretboardProps> = ({
 
   return (
     <div
-      className="w-full flex justify-center items-center py-1 transition-all duration-150"
       style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         filter: hasShadow ? 'drop-shadow(3px 3px 0px currentColor)' : undefined,
       }}
     >
@@ -191,28 +186,56 @@ export const Fretboard: React.FC<FretboardProps> = ({
         width={width}
         height={height}
         viewBox={`0 0 ${width} ${height}`}
-        className="select-none overflow-visible"
+        style={{ overflow: 'visible', userSelect: 'none' }}
       >
         {/* String names above nut: E A D G B E */}
-        {STRING_NAMES.map((name, i) => (
-          <text
-            key={`str-name-${i}`}
-            x={getStringX(i)}
-            y={24}
-            fill="currentColor"
-            fontSize="14"
-            fontWeight="900"
-            fontFamily="monospace"
-            textAnchor="middle"
-          >
-            {name}
-          </text>
-        ))}
+        {STRING_NAMES.map((name, i) => {
+          const isAnchorStr = anchorString === i;
+          const x = getStringX(i);
+          return (
+            <g key={`str-name-${i}`}>
+              {isAnchorStr ? (
+                <g>
+                  <rect
+                    x={x - 10}
+                    y="4"
+                    width="20"
+                    height="20"
+                    fill="currentColor"
+                  />
+                  <text
+                    x={x}
+                    y="19"
+                    fill="var(--app-bg, #000)"
+                    fontSize="13"
+                    fontWeight="900"
+                    fontFamily="monospace"
+                    textAnchor="middle"
+                  >
+                    {name}
+                  </text>
+                </g>
+              ) : (
+                <text
+                  x={x}
+                  y="19"
+                  fill="currentColor"
+                  fontSize="13"
+                  fontWeight="900"
+                  fontFamily="monospace"
+                  textAnchor="middle"
+                >
+                  {name}
+                </text>
+              )}
+            </g>
+          );
+        })}
 
         {/* Open (O) / Muted (X) indicators above the nut line */}
         {chord.strings.map((strVal, i) => {
           const x = getStringX(i);
-          const y = 48;
+          const y = 44;
           if (strVal === -1) {
             // Muted X
             return (
@@ -239,7 +262,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
           return null;
         })}
 
-        {/* Nut Line (heavy top bar) if baseFret === 1, or standard fret line with position tag */}
+        {/* Nut Line (heavy top bar) if baseFret === 1, or fret line with position tag */}
         {baseFret === 1 ? (
           <line
             x1={startX - 1}
@@ -260,9 +283,8 @@ export const Fretboard: React.FC<FretboardProps> = ({
               stroke="currentColor"
               strokeWidth="2.5"
             />
-            {/* Position indicator, e.g. 2fr */}
             <text
-              x={startX - 18}
+              x={startX - 16}
               y={startY + fretSpacing / 2 + 5}
               fill="currentColor"
               fontSize="12"
@@ -275,7 +297,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
           </g>
         )}
 
-        {/* Horizontal Fret Lines */}
+        {/* 5 Horizontal Fret Lines */}
         {Array.from({ length: numFrets }).map((_, i) => (
           <line
             key={`fret-${i + 1}`}
@@ -288,7 +310,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
           />
         ))}
 
-        {/* Vertical String Lines */}
+        {/* 6 Vertical String Lines */}
         {Array.from({ length: 6 }).map((_, i) => (
           <line
             key={`string-${i}`}
@@ -342,9 +364,8 @@ export const Fretboard: React.FC<FretboardProps> = ({
 
         {/* Finger Dots */}
         {chord.strings.map((fret, stringIdx) => {
-          if (fret <= 0) return null; // open or muted
+          if (fret <= 0) return null;
 
-          // If covered by barre chord, don't double render if it's the barre finger
           if (
             chord.barre &&
             fret === chord.barre.fret &&
@@ -359,7 +380,6 @@ export const Fretboard: React.FC<FretboardProps> = ({
           const y = getNoteY(fret);
           const finger = chord.fingers[stringIdx];
 
-          // Check if this note is an anchor finger
           const isAnchor =
             (anchorFinger && finger === anchorFinger) ||
             (anchorString !== undefined &&

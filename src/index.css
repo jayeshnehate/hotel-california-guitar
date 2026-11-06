@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   --app-bg: #000000;
@@ -14,6 +12,8 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   user-select: none;
@@ -24,11 +24,11 @@
 html,
 body,
 #root {
-  margin: 0;
-  padding: 0;
   width: 100%;
   height: 100%;
   height: 100dvh;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
   overscroll-behavior: none;
   background-color: var(--app-bg);
@@ -36,33 +36,236 @@ body,
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, monospace;
 }
 
-/* iOS Safe Area Padding container */
-.safe-area-container {
-  padding-top: max(10px, env(safe-area-inset-top));
-  padding-bottom: max(14px, env(safe-area-inset-bottom));
-  padding-left: max(14px, env(safe-area-inset-left));
-  padding-right: max(14px, env(safe-area-inset-right));
+/* Base App Shell Layout */
+.app-viewport {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--app-bg);
+  color: var(--app-fg);
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  overflow: hidden;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-/* Beat pulse for viewport */
 .beat-pulse-active {
   box-shadow: inset 0 0 0 2px var(--app-fg) !important;
 }
 
-/* Neo-brutalist offset shadow utility */
-.brutal-shadow {
+/* Header */
+.app-header {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 4px 8px;
+}
+
+.header-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.node-number {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  opacity: 0.9;
+}
+
+.anchor-symbol {
+  font-family: monospace;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.chord-buttons-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Fretboard Section */
+.app-main {
+  width: 100%;
+  max-width: 360px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 0;
+}
+
+/* Rhythm Visualizer */
+.rhythm-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.rhythm-arrow-box {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid currentColor;
+  box-shadow: 2px 2px 0px 0px currentColor;
+  transition: transform 0.08s ease, background-color 0.08s ease;
+}
+
+.rhythm-arrow-box.active {
+  background-color: currentColor;
+  color: var(--app-bg);
+  transform: scale(1.08);
   box-shadow: 3px 3px 0px 0px currentColor;
 }
 
-.brutal-shadow-sm {
+/* Footer Controls */
+.app-footer {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 8px;
+}
+
+.bpm-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+
+.bpm-value {
+  font-family: monospace;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  width: 64px;
+  text-align: center;
+}
+
+/* Neo-Brutalist Buttons with Shadows */
+.brutal-btn {
+  border: 2px solid currentColor;
+  background-color: var(--app-bg);
+  color: currentColor;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 3px 3px 0px 0px currentColor;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+
+.brutal-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px currentColor;
+}
+
+.brutal-btn-icon {
+  width: 38px;
+  height: 38px;
+}
+
+.brutal-btn-bpm {
+  width: 44px;
+  height: 44px;
+  font-family: monospace;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.brutal-btn-chord {
+  min-width: 40px;
+  height: 40px;
+  padding: 0 10px;
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.brutal-btn-chord.active {
+  background-color: currentColor;
+  color: var(--app-bg);
+}
+
+/* Large Circular Play / Timer Button */
+.play-timer-container {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.play-timer-btn {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 3.5px solid currentColor;
+  background-color: var(--app-bg);
+  color: currentColor;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 4px 4px 0px 0px currentColor;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  overflow: visible;
+}
+
+.play-timer-btn:active {
+  transform: translate(2px, 2px);
   box-shadow: 2px 2px 0px 0px currentColor;
 }
 
-.brutal-shadow-lg {
-  box-shadow: 5px 5px 0px 0px currentColor;
+.timer-seconds-text {
+  font-family: monospace;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
 }
 
-.brutal-btn-active:active {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px 0px currentColor;
+/* 3-Step Dots */
+.step-dots-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background-color: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.step-dot.active {
+  background-color: currentColor;
 }

@@ -3,7 +3,7 @@ import { StrumBeat } from '../curriculum';
 
 interface RhythmVisualizerProps {
   pattern?: StrumBeat[];
-  activeBeatIndex: number; // 0-based
+  activeBeatIndex: number;
   isPlaying: boolean;
 }
 
@@ -13,28 +13,50 @@ export const RhythmVisualizer: React.FC<RhythmVisualizerProps> = ({
   isPlaying,
 }) => {
   return (
-    <div className="w-full flex items-center justify-center gap-2 py-2 select-none">
+    <div
+      style={{
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px',
+        padding: '6px 0',
+        userSelect: 'none',
+      }}
+    >
       {pattern.map((beat, idx) => {
         const isActive = isPlaying && activeBeatIndex === idx;
 
         return (
           <div
             key={idx}
-            className={`w-9 h-9 flex items-center justify-center border-2 border-current font-mono text-base font-bold transition-all duration-75 ${
-              isActive
-                ? 'bg-current text-[var(--app-bg,#000)] scale-110 shadow-[2px_2px_0px_0px_currentColor]'
-                : 'bg-transparent text-current shadow-[2px_2px_0px_0px_currentColor]'
-            }`}
+            className={`rhythm-arrow-box ${isActive ? 'active' : ''}`}
+            style={{
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid currentColor',
+              backgroundColor: isActive ? 'currentColor' : 'transparent',
+              color: isActive ? 'var(--app-bg, #000)' : 'currentColor',
+              boxShadow: isActive ? '3px 3px 0px 0px currentColor' : '2px 2px 0px 0px currentColor',
+              transform: isActive ? 'scale(1.1)' : 'scale(1)',
+              fontFamily: 'monospace',
+              fontSize: '15px',
+              fontWeight: 'bold',
+            }}
           >
             {beat === 'D' && (
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 21l-8-9h5V3h6v9h5z" />
               </svg>
             )}
             {beat === 'U' && (
               <svg
-                width="18"
-                height="18"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -46,8 +68,8 @@ export const RhythmVisualizer: React.FC<RhythmVisualizerProps> = ({
             )}
             {beat === 'G' && (
               <svg
-                width="18"
-                height="18"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
