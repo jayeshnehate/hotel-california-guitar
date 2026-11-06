@@ -67,17 +67,22 @@ export const Fretboard: React.FC<FretboardProps> = ({
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          width: '100%',
           filter: hasShadow ? 'drop-shadow(3px 3px 0px currentColor)' : undefined,
           willChange: 'filter',
         }}
       >
         <svg
-          width={hWidth}
-          height={hHeight}
           viewBox={`0 0 ${hWidth} ${hHeight}`}
+          style={{
+            width: '100%',
+            maxWidth: '320px',
+            maxHeight: '40dvh',
+            overflow: 'visible',
+            userSelect: 'none',
+          }}
           shapeRendering="geometricPrecision"
           textRendering="geometricPrecision"
-          style={{ overflow: 'visible', userSelect: 'none' }}
         >
           {[1, 2, 3, 4, 5].map((fret) => {
             const fx = hStartX + (fret - 1) * 50;
@@ -189,19 +194,24 @@ export const Fretboard: React.FC<FretboardProps> = ({
     <div
       style={{
         display: 'flex',
-        flexDirection: 'column',
+        justifyContent: 'center',
         alignItems: 'center',
+        width: '100%',
         filter: hasShadow ? 'drop-shadow(3px 3px 0px currentColor)' : undefined,
         willChange: 'filter',
       }}
     >
       <svg
-        width={width}
-        height={height}
         viewBox={`0 0 ${width} ${height}`}
+        style={{
+          width: '100%',
+          maxWidth: '290px',
+          maxHeight: '43dvh',
+          overflow: 'visible',
+          userSelect: 'none',
+        }}
         shapeRendering="geometricPrecision"
         textRendering="geometricPrecision"
-        style={{ overflow: 'visible', userSelect: 'none' }}
       >
         {/* String names above nut: E A D G B E */}
         {STRING_NAMES.map((name, i) => {
@@ -283,14 +293,12 @@ export const Fretboard: React.FC<FretboardProps> = ({
         {/* VISUAL STRUM SPAN BRACKET: Shows exactly which strings to strum */}
         {playableStrings.length > 0 && (
           <g>
-            {/* Horizontal bracket spanning from first to last playable string */}
             <path
               d={`M ${getStringX(firstPlayableString)} 64 L ${getStringX(firstPlayableString)} 68 L ${getStringX(lastPlayableString)} 68 L ${getStringX(lastPlayableString)} 64`}
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
             />
-            {/* Small downward strum arrow at the center of the strum bracket */}
             <path
               d={`M ${(getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2 - 4} 60 L ${(getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2} 66 L ${(getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2 + 4} 60`}
               fill="currentColor"
@@ -419,11 +427,11 @@ export const Fretboard: React.FC<FretboardProps> = ({
           const y = getNoteY(fret);
           const finger = chord.fingers[stringIdx];
 
+          // Strict mathematical anchor calculation: only highlight the exact anchor
           const isAnchor =
-            (anchorFinger && finger === anchorFinger) ||
-            (anchorString !== undefined &&
-              anchorString === stringIdx &&
-              (anchorFret === undefined || anchorFret === fret));
+            anchorString !== undefined
+              ? stringIdx === anchorString && (anchorFret === undefined || anchorFret === fret)
+              : anchorFinger !== undefined && finger === anchorFinger;
 
           return (
             <g key={`note-${stringIdx}-${fret}`}>

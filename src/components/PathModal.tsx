@@ -19,9 +19,17 @@ export const PathModal: React.FC<PathModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[var(--app-bg,#000)] text-current select-none overflow-hidden">
+    <div
+      className="fixed inset-0 z-50 flex flex-col bg-[var(--app-bg,#000)] text-current select-none overflow-hidden"
+      style={{
+        paddingTop: 'max(14px, env(safe-area-inset-top))',
+        paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
+        paddingLeft: 'max(14px, env(safe-area-inset-left))',
+        paddingRight: 'max(14px, env(safe-area-inset-right))',
+      }}
+    >
       {/* Top Bar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b-2 border-current">
+      <div className="flex items-center justify-between px-6 py-3 border-b-2 border-current">
         <div className="flex items-center gap-2">
           <span className="font-mono font-black text-xl tracking-wider">01 - 50</span>
         </div>
@@ -35,23 +43,25 @@ export const PathModal: React.FC<PathModalProps> = ({
       </div>
 
       {/* Bonsai Header */}
-      <div className="flex flex-col items-center justify-center pt-6 pb-4 border-b border-current/20">
+      <div className="flex flex-col items-center justify-center pt-4 pb-3 border-b border-current/20">
         <Bonsai
           completedSessions={progress.completedSessions}
           lastCompletedTimestamp={progress.lastCompletedTimestamp}
-          size={140}
+          size={130}
         />
       </div>
 
       {/* 50 Nodes Scrollable List */}
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-3">
+      <div
+        className="flex-1 overflow-y-auto px-4 py-4 space-y-2.5"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
         {CURRICULUM.map((node: CurriculumNode) => {
           const record = progress.nodes[node.id];
           const isUnlocked = record?.unlocked ?? false;
           const isActive = progress.activeNodeId === node.id;
           const mastery = record?.mastery ?? 0;
 
-          // Status icon
           let statusBadge = '🔒';
           if (isUnlocked) {
             if (mastery === 3) statusBadge = '◯';

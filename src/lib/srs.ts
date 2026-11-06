@@ -115,7 +115,11 @@ export function evaluateSession(
   reps: number,
   currentProgress: UserProgress
 ): UserProgress {
-  const next = { ...currentProgress, nodes: { ...currentProgress.nodes } };
+  const next: UserProgress = {
+    ...currentProgress,
+    nodes: { ...currentProgress.nodes },
+  };
+
   const currentRec = next.nodes[nodeId] || {
     unlocked: true,
     mastery: 0,
@@ -147,7 +151,7 @@ export function evaluateSession(
     bestReps: Math.max(currentRec.bestReps, reps),
   };
 
-  // If passed or mastered, unlock next node in curriculum
+  // If passed or mastered, unlock next node and advance activeNodeId
   if (grade === 'pass' || grade === 'mastered') {
     const currentIndex = CURRICULUM.findIndex((n) => n.id === nodeId);
     if (currentIndex >= 0 && currentIndex < CURRICULUM.length - 1) {
@@ -161,6 +165,7 @@ export function evaluateSession(
           bestReps: 0,
         };
       }
+      next.activeNodeId = nextNode.id;
     }
   }
 

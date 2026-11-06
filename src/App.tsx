@@ -57,19 +57,16 @@ export const App: React.FC = () => {
     });
   }, []);
 
-  // Metronome tick: lightweight, triggering GPU animation without React state thrashing
   const handleBeat = useCallback(
     (beat: number) => {
       setCurrentBeat(beat);
 
-      // Trigger GPU beat animation via direct DOM manipulation
       if (viewportRef.current) {
         viewportRef.current.classList.remove('beat-pulse-active');
-        void viewportRef.current.offsetWidth; // force reflow for instantaneous re-trigger
+        void viewportRef.current.offsetWidth;
         viewportRef.current.classList.add('beat-pulse-active');
       }
 
-      // Automatically advance to the next chord every 4 beats (1 measure)
       if (displayNode.chords.length > 1 && beat === 0) {
         setActiveChordIndex((prev) => (prev + 1) % displayNode.chords.length);
       }
@@ -134,18 +131,6 @@ export const App: React.FC = () => {
       const updated = evaluateSession(activeNode.id, grade, reps, progress);
       setProgress(updated);
 
-      if (grade === 'pass' || grade === 'mastered') {
-        const currIdx = CURRICULUM.findIndex((n) => n.id === activeNode.id);
-        if (currIdx < CURRICULUM.length - 1) {
-          setProgress((p) => {
-            const nextNode = CURRICULUM[currIdx + 1];
-            const up: UserProgress = { ...p, activeNodeId: nextNode.id };
-            saveProgress(up);
-            return up;
-          });
-        }
-      }
-
       setActiveStep(0);
       setTimeLeft(60);
       setActiveChordIndex(0);
@@ -153,10 +138,22 @@ export const App: React.FC = () => {
     [activeNode.id, progress]
   );
 
+  const switchStep = useCallback(
+    (step: 0 | 1 | 2) => {
+      stopDrill();
+      setActiveStep(step);
+      setTimeLeft(60);
+      setActiveChordIndex(0);
+      if (step === 2) {
+        setIsVerificationOpen(true);
+      }
+    },
+    [stopDrill]
+  );
+
   const currentChord: ChordShape =
     displayNode.chords[activeChordIndex % displayNode.chords.length] || displayNode.chords[0];
 
-  // Radial progress calculations
   const timerRadius = 38;
   const timerCircumference = 2 * Math.PI * timerRadius;
   const timerStrokeDashoffset = timerCircumference - (timeLeft / 60) * timerCircumference;
@@ -167,7 +164,10 @@ export const App: React.FC = () => {
       <header className="app-header">
         {/* Left: 4-square Grid Button */}
         <button
-          onClick={() => setIsPathOpen(true)}
+          onClick={() => {
+            stopDrill();
+            setIsPathOpen(true);
+          }}
           aria-label="Path Map"
           className="brutal-btn brutal-btn-icon"
         >
@@ -335,16 +335,31 @@ export const App: React.FC = () => {
           </button>
         </div>
 
-        {/* 3 Step Indicator Dots: Step 1 (Warmup), Step 2 (Core Drill), Step 3 (Gate) */}
+        {/* 3 Step Indicator Dots (Clickable): Step 1 (Warmup), Step 2 (Core Drill), Step 3 (Gate) */}
         <div className="step-dots-row">
-          <span className={`step-dot ${activeStep === 0 ? 'active' : ''}`} />
-          <span className={`step-dot ${activeStep === 1 ? 'active' : ''}`} />
-          <span className={`step-dot ${activeStep === 2 ? 'active' : ''}`} />
+          <button
+            onClick={() => switchStep(0)}
+            aria-label="Step 1 Warmup"
+            className={`step-dot ${activeStep === 0 ? 'active' : ''}`}
+          />
+          <button
+            onClick={() => switchStep(1)}
+            aria-label="Step 2 Core Drill"
+            className={`step-dot ${activeStep === 1 ? 'active' : ''}`}
+          />
+          <button
+            onClick={() => switchStep(2)}
+            aria-label="Step 3 Gate"
+            className={`step-dot ${activeStep === 2 ? 'active' : ''}`}
+          />
         </div>
 
         {/* Subtle Bonsai Emblem */}
         <div
-          onClick={() => setIsPathOpen(true)}
+          onClick={() => {
+            stopDrill();
+            setIsPathOpen(true);
+          }}
           style={{ cursor: 'pointer', opacity: 0.8, paddingTop: '2px' }}
           title="Silent Bonsai"
         >
@@ -363,6 +378,7 @@ export const App: React.FC = () => {
         onClose={() => setIsPathOpen(false)}
         progress={progress}
         onSelectNode={(nodeId) => {
+          stopDrill();
           setProgress((prev) => {
             const next: UserProgress = { ...prev, activeNodeId: nodeId };
             saveProgress(next);
@@ -371,7 +387,6 @@ export const App: React.FC = () => {
           setActiveStep(0);
           setTimeLeft(60);
           setActiveChordIndex(0);
-          stopDrill();
         }}
       />
 
