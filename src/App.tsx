@@ -215,9 +215,11 @@ export const App: React.FC = () => {
 
       {/* 2. CENTER: ACTIVE CHORD BANNER + SVG FRETBOARD + RHYTHM VISUALIZER */}
       <main className="app-main">
-        {/* Active Chord Indicator & 4-Beat Measure Progression */}
+        {/* Active Chord Indicator & 4-Beat Measure Cadence */}
         <div className="active-chord-banner">
-          <span className="active-chord-name">{currentChord.name}</span>
+          <div className="active-chord-pill">
+            <span>{currentChord.name}</span>
+          </div>
           {displayNode.chords.length > 1 && (
             <div className="measure-beat-dots">
               {[0, 1, 2, 3].map((b) => (
@@ -335,23 +337,29 @@ export const App: React.FC = () => {
           </button>
         </div>
 
-        {/* 3 Step Indicator Dots (Clickable): Step 1 (Warmup), Step 2 (Core Drill), Step 3 (Gate) */}
+        {/* 3 Step Indicator Buttons (Clickable): Step 1 (Warmup), Step 2 (Core Drill), Step 3 (Gate) */}
         <div className="step-dots-row">
           <button
             onClick={() => switchStep(0)}
             aria-label="Step 1 Warmup"
-            className={`step-dot ${activeStep === 0 ? 'active' : ''}`}
-          />
+            className={`step-dot-btn ${activeStep === 0 ? 'active' : ''}`}
+          >
+            1
+          </button>
           <button
             onClick={() => switchStep(1)}
             aria-label="Step 2 Core Drill"
-            className={`step-dot ${activeStep === 1 ? 'active' : ''}`}
-          />
+            className={`step-dot-btn ${activeStep === 1 ? 'active' : ''}`}
+          >
+            2
+          </button>
           <button
             onClick={() => switchStep(2)}
             aria-label="Step 3 Gate"
-            className={`step-dot ${activeStep === 2 ? 'active' : ''}`}
-          />
+            className={`step-dot-btn ${activeStep === 2 ? 'active' : ''}`}
+          >
+            3
+          </button>
         </div>
 
         {/* Subtle Bonsai Emblem */}

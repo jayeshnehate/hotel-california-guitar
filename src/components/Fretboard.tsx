@@ -25,15 +25,15 @@ export const Fretboard: React.FC<FretboardProps> = ({
   const baseFret = chord.baseFret || 1;
   const numFrets = 5;
 
-  // Geometry: 290px wide gives 44px between strings so finger dots & anchor rings breathe
+  // Geometry: 290px wide gives 44px between strings
   const width = 290;
-  const height = 350;
+  const height = 356;
   const startX = 35;
   const endX = 255;
-  const stringSpacing = (endX - startX) / 5; // exactly 44px
-  const startY = 78;
-  const endY = 338;
-  const fretSpacing = (endY - startY) / numFrets; // 52px per fret
+  const stringSpacing = (endX - startX) / 5; // 44px
+  const startY = 86;
+  const endY = 346;
+  const fretSpacing = (endY - startY) / numFrets; // 52px
 
   const getStringX = (index: number) => startX + index * stringSpacing;
   const getFretY = (fretIndex: number) => startY + fretIndex * fretSpacing;
@@ -42,10 +42,9 @@ export const Fretboard: React.FC<FretboardProps> = ({
     return startY + (relFret - 0.5) * fretSpacing;
   };
 
-  // High contrast string thicknesses: low E thickest to high e thinnest
   const stringThicknesses = [3.8, 3.2, 2.6, 2.0, 1.5, 1.1];
 
-  // Calculate playable strum range (from lowest non-muted string to highest non-muted string)
+  // Playable strings range
   const playableStrings = chord.strings
     .map((val, idx) => (val !== -1 ? idx : -1))
     .filter((idx) => idx !== -1);
@@ -157,7 +156,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
                 <circle
                   cx={hStartX - 32}
                   cy={sy}
-                  r="7.5"
+                  r="8"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2.5"
@@ -168,14 +167,14 @@ export const Fretboard: React.FC<FretboardProps> = ({
             const fx = hStartX + (relFret - 0.5) * 50;
             return (
               <g>
-                <circle cx={fx} cy={sy} r="14.5" fill="currentColor" />
-                <circle cx={fx} cy={sy} r="18.5" fill="none" stroke="currentColor" strokeWidth="2" />
+                <circle cx={fx} cy={sy} r="15" fill="currentColor" />
+                <circle cx={fx} cy={sy} r="19" fill="none" stroke="currentColor" strokeWidth="2" />
                 <text
                   x={fx}
                   y={sy}
                   dominantBaseline="central"
                   fill="var(--app-bg, #000)"
-                  fontSize="13"
+                  fontSize="14"
                   fontWeight="bold"
                   fontFamily="monospace"
                   textAnchor="middle"
@@ -213,7 +212,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
         shapeRendering="geometricPrecision"
         textRendering="geometricPrecision"
       >
-        {/* String names above nut: E A D G B E */}
+        {/* ROW 1: String names above nut: E A D G B E */}
         {STRING_NAMES.map((name, i) => {
           const isAnchorStr = anchorString === i;
           const x = getStringX(i);
@@ -222,12 +221,12 @@ export const Fretboard: React.FC<FretboardProps> = ({
               {isAnchorStr ? (
                 <g>
                   <rect
-                    x={x - 11}
+                    x={x - 12}
                     y="2"
-                    width="22"
+                    width="24"
                     height="20"
                     fill="currentColor"
-                    rx="2"
+                    rx="3"
                   />
                   <text
                     x={x}
@@ -260,16 +259,26 @@ export const Fretboard: React.FC<FretboardProps> = ({
           );
         })}
 
-        {/* Open (O) / Muted (X) indicators */}
+        {/* ROW 2: Open (O) / Muted (X) indicators */}
         {chord.strings.map((strVal, i) => {
           const x = getStringX(i);
           const y = 38;
           if (strVal === -1) {
-            // Muted string (✕)
+            // Muted string (✕) inside clean square box for 100% clarity
             return (
-              <g key={`mute-${i}`} stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
-                <line x1={x - 6.5} y1={y - 6.5} x2={x + 6.5} y2={y + 6.5} />
-                <line x1={x + 6.5} y1={y - 6.5} x2={x - 6.5} y2={y + 6.5} />
+              <g key={`mute-${i}`}>
+                <rect
+                  x={x - 9}
+                  y={y - 9}
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  rx="2"
+                />
+                <line x1={x - 5} y1={y - 5} x2={x + 5} y2={y + 5} stroke="currentColor" strokeWidth="2" strokeLinecap="square" />
+                <line x1={x + 5} y1={y - 5} x2={x - 5} y2={y + 5} stroke="currentColor" strokeWidth="2" strokeLinecap="square" />
               </g>
             );
           }
@@ -280,7 +289,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
                 key={`open-${i}`}
                 cx={x}
                 cy={y}
-                r="7"
+                r="7.5"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.4"
@@ -290,19 +299,29 @@ export const Fretboard: React.FC<FretboardProps> = ({
           return null;
         })}
 
-        {/* VISUAL STRUM SPAN BRACKET: Shows exactly which strings to strum */}
+        {/* ROW 3: BOLD STRUM SPAN BRACKET WITH PROMINENT DOWN ARROW */}
         {playableStrings.length > 0 && (
           <g>
+            {/* Horizontal span bracket */}
             <path
-              d={`M ${getStringX(firstPlayableString)} 64 L ${getStringX(firstPlayableString)} 68 L ${getStringX(lastPlayableString)} 68 L ${getStringX(lastPlayableString)} 64`}
+              d={`M ${getStringX(firstPlayableString)} 68 L ${getStringX(firstPlayableString)} 74 L ${getStringX(lastPlayableString)} 74 L ${getStringX(lastPlayableString)} 68`}
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
             />
-            <path
-              d={`M ${(getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2 - 4} 60 L ${(getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2} 66 L ${(getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2 + 4} 60`}
-              fill="currentColor"
-            />
+            {/* Prominent down arrow at center of strum bracket */}
+            {(() => {
+              const midX = (getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2;
+              return (
+                <g>
+                  <line x1={midX} y1="58" x2={midX} y2="72" stroke="currentColor" strokeWidth="2.5" />
+                  <polygon
+                    points={`${midX - 5},66 ${midX},74 ${midX + 5},66`}
+                    fill="currentColor"
+                  />
+                </g>
+              );
+            })()}
           </g>
         )}
 
@@ -333,7 +352,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
               y={startY + fretSpacing / 2}
               dominantBaseline="central"
               fill="currentColor"
-              fontSize="13"
+              fontSize="14"
               fontWeight="900"
               fontFamily="monospace"
               textAnchor="middle"
@@ -427,7 +446,6 @@ export const Fretboard: React.FC<FretboardProps> = ({
           const y = getNoteY(fret);
           const finger = chord.fingers[stringIdx];
 
-          // Strict mathematical anchor calculation: only highlight the exact anchor
           const isAnchor =
             anchorString !== undefined
               ? stringIdx === anchorString && (anchorFret === undefined || anchorFret === fret)
@@ -440,14 +458,14 @@ export const Fretboard: React.FC<FretboardProps> = ({
                 <circle
                   cx={x}
                   cy={y}
-                  r="18.5"
+                  r="19"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2.2"
+                  strokeWidth="2.4"
                 />
               )}
               {/* Solid finger dot */}
-              <circle cx={x} cy={y} r="13.5" fill="currentColor" />
+              <circle cx={x} cy={y} r="14" fill="currentColor" />
               {/* High-legibility inverted finger number */}
               {finger !== null && (
                 <text

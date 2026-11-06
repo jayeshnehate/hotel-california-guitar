@@ -32,6 +32,7 @@ export const PathModal: React.FC<PathModalProps> = ({
       <div className="flex items-center justify-between px-6 py-3 border-b-2 border-current">
         <div className="flex items-center gap-2">
           <span className="font-mono font-black text-xl tracking-wider">01 - 50</span>
+          <span className="font-mono text-xs opacity-60">· v1.2</span>
         </div>
         <button
           onClick={onClose}
