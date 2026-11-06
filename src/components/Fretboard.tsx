@@ -25,15 +25,15 @@ export const Fretboard: React.FC<FretboardProps> = ({
   const baseFret = chord.baseFret || 1;
   const numFrets = 5;
 
-  // Geometry
-  const width = 260;
-  const height = 330;
-  const startX = 30;
-  const endX = 230;
-  const stringSpacing = (endX - startX) / 5; // exactly 40px
-  const startY = 62;
-  const endY = 312;
-  const fretSpacing = (endY - startY) / numFrets; // exactly 50px
+  // Geometry: 290px wide gives 44px between strings so finger dots & anchor rings breathe
+  const width = 290;
+  const height = 350;
+  const startX = 35;
+  const endX = 255;
+  const stringSpacing = (endX - startX) / 5; // exactly 44px
+  const startY = 78;
+  const endY = 338;
+  const fretSpacing = (endY - startY) / numFrets; // 52px per fret
 
   const getStringX = (index: number) => startX + index * stringSpacing;
   const getFretY = (fretIndex: number) => startY + fretIndex * fretSpacing;
@@ -42,7 +42,15 @@ export const Fretboard: React.FC<FretboardProps> = ({
     return startY + (relFret - 0.5) * fretSpacing;
   };
 
-  const stringThicknesses = [3.6, 3.0, 2.4, 1.8, 1.4, 1.0];
+  // High contrast string thicknesses: low E thickest to high e thinnest
+  const stringThicknesses = [3.8, 3.2, 2.6, 2.0, 1.5, 1.1];
+
+  // Calculate playable strum range (from lowest non-muted string to highest non-muted string)
+  const playableStrings = chord.strings
+    .map((val, idx) => (val !== -1 ? idx : -1))
+    .filter((idx) => idx !== -1);
+  const firstPlayableString = playableStrings.length > 0 ? Math.min(...playableStrings) : 0;
+  const lastPlayableString = playableStrings.length > 0 ? Math.max(...playableStrings) : 5;
 
   if (mode === 'horizontal' && activeArpeggioStep) {
     const hWidth = 320;
@@ -60,12 +68,15 @@ export const Fretboard: React.FC<FretboardProps> = ({
           justifyContent: 'center',
           alignItems: 'center',
           filter: hasShadow ? 'drop-shadow(3px 3px 0px currentColor)' : undefined,
+          willChange: 'filter',
         }}
       >
         <svg
           width={hWidth}
           height={hHeight}
           viewBox={`0 0 ${hWidth} ${hHeight}`}
+          shapeRendering="geometricPrecision"
+          textRendering="geometricPrecision"
           style={{ overflow: 'visible', userSelect: 'none' }}
         >
           {[1, 2, 3, 4, 5].map((fret) => {
@@ -84,7 +95,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
                   x={fx + 25}
                   y={hStartY - 10}
                   fill="currentColor"
-                  fontSize="12"
+                  fontSize="13"
                   fontWeight="bold"
                   fontFamily="monospace"
                   textAnchor="middle"
@@ -112,7 +123,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
                   x={hStartX - 16}
                   y={sy + 4}
                   fill="currentColor"
-                  fontSize="12"
+                  fontSize="13"
                   fontWeight="bold"
                   fontFamily="monospace"
                   textAnchor="middle"
@@ -141,7 +152,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
                 <circle
                   cx={hStartX - 32}
                   cy={sy}
-                  r="7"
+                  r="7.5"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2.5"
@@ -152,13 +163,14 @@ export const Fretboard: React.FC<FretboardProps> = ({
             const fx = hStartX + (relFret - 0.5) * 50;
             return (
               <g>
-                <circle cx={fx} cy={sy} r="14" fill="currentColor" />
-                <circle cx={fx} cy={sy} r="18" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                <circle cx={fx} cy={sy} r="14.5" fill="currentColor" />
+                <circle cx={fx} cy={sy} r="18.5" fill="none" stroke="currentColor" strokeWidth="2" />
                 <text
                   x={fx}
-                  y={sy + 4.5}
+                  y={sy}
+                  dominantBaseline="central"
                   fill="var(--app-bg, #000)"
-                  fontSize="12"
+                  fontSize="13"
                   fontWeight="bold"
                   fontFamily="monospace"
                   textAnchor="middle"
@@ -177,15 +189,18 @@ export const Fretboard: React.FC<FretboardProps> = ({
     <div
       style={{
         display: 'flex',
-        justifyContent: 'center',
+        flexDirection: 'column',
         alignItems: 'center',
         filter: hasShadow ? 'drop-shadow(3px 3px 0px currentColor)' : undefined,
+        willChange: 'filter',
       }}
     >
       <svg
         width={width}
         height={height}
         viewBox={`0 0 ${width} ${height}`}
+        shapeRendering="geometricPrecision"
+        textRendering="geometricPrecision"
         style={{ overflow: 'visible', userSelect: 'none' }}
       >
         {/* String names above nut: E A D G B E */}
@@ -197,15 +212,17 @@ export const Fretboard: React.FC<FretboardProps> = ({
               {isAnchorStr ? (
                 <g>
                   <rect
-                    x={x - 10}
-                    y="4"
-                    width="20"
+                    x={x - 11}
+                    y="2"
+                    width="22"
                     height="20"
                     fill="currentColor"
+                    rx="2"
                   />
                   <text
                     x={x}
-                    y="19"
+                    y="13"
+                    dominantBaseline="central"
                     fill="var(--app-bg, #000)"
                     fontSize="13"
                     fontWeight="900"
@@ -218,9 +235,10 @@ export const Fretboard: React.FC<FretboardProps> = ({
               ) : (
                 <text
                   x={x}
-                  y="19"
+                  y="13"
+                  dominantBaseline="central"
                   fill="currentColor"
-                  fontSize="13"
+                  fontSize="14"
                   fontWeight="900"
                   fontFamily="monospace"
                   textAnchor="middle"
@@ -232,35 +250,53 @@ export const Fretboard: React.FC<FretboardProps> = ({
           );
         })}
 
-        {/* Open (O) / Muted (X) indicators above the nut line */}
+        {/* Open (O) / Muted (X) indicators */}
         {chord.strings.map((strVal, i) => {
           const x = getStringX(i);
-          const y = 44;
+          const y = 38;
           if (strVal === -1) {
-            // Muted X
+            // Muted string (✕)
             return (
-              <g key={`mute-${i}`} stroke="currentColor" strokeWidth="2.4" strokeLinecap="square">
-                <line x1={x - 6} y1={y - 6} x2={x + 6} y2={y + 6} />
-                <line x1={x + 6} y1={y - 6} x2={x - 6} y2={y + 6} />
+              <g key={`mute-${i}`} stroke="currentColor" strokeWidth="2.5" strokeLinecap="square">
+                <line x1={x - 6.5} y1={y - 6.5} x2={x + 6.5} y2={y + 6.5} />
+                <line x1={x + 6.5} y1={y - 6.5} x2={x - 6.5} y2={y + 6.5} />
               </g>
             );
           }
           if (strVal === 0) {
-            // Open string O
+            // Open string (O)
             return (
               <circle
                 key={`open-${i}`}
                 cx={x}
                 cy={y}
-                r="6.5"
+                r="7"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.2"
+                strokeWidth="2.4"
               />
             );
           }
           return null;
         })}
+
+        {/* VISUAL STRUM SPAN BRACKET: Shows exactly which strings to strum */}
+        {playableStrings.length > 0 && (
+          <g>
+            {/* Horizontal bracket spanning from first to last playable string */}
+            <path
+              d={`M ${getStringX(firstPlayableString)} 64 L ${getStringX(firstPlayableString)} 68 L ${getStringX(lastPlayableString)} 68 L ${getStringX(lastPlayableString)} 64`}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            {/* Small downward strum arrow at the center of the strum bracket */}
+            <path
+              d={`M ${(getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2 - 4} 60 L ${(getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2} 66 L ${(getStringX(firstPlayableString) + getStringX(lastPlayableString)) / 2 + 4} 60`}
+              fill="currentColor"
+            />
+          </g>
+        )}
 
         {/* Nut Line (heavy top bar) if baseFret === 1, or fret line with position tag */}
         {baseFret === 1 ? (
@@ -283,12 +319,14 @@ export const Fretboard: React.FC<FretboardProps> = ({
               stroke="currentColor"
               strokeWidth="2.5"
             />
+            {/* Position indicator, e.g. 2fr */}
             <text
-              x={startX - 16}
-              y={startY + fretSpacing / 2 + 5}
+              x={startX - 18}
+              y={startY + fretSpacing / 2}
+              dominantBaseline="central"
               fill="currentColor"
-              fontSize="12"
-              fontWeight="bold"
+              fontSize="13"
+              fontWeight="900"
               fontFamily="monospace"
               textAnchor="middle"
             >
@@ -306,7 +344,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
             x2={endX}
             y2={getFretY(i + 1)}
             stroke="currentColor"
-            strokeWidth="1.5"
+            strokeWidth="1.6"
           />
         ))}
 
@@ -323,7 +361,7 @@ export const Fretboard: React.FC<FretboardProps> = ({
           />
         ))}
 
-        {/* Barre Chord Pill */}
+        {/* Barre Chord Continuous Pill */}
         {chord.barre && (
           <g>
             {(() => {
@@ -331,26 +369,27 @@ export const Fretboard: React.FC<FretboardProps> = ({
               const x1 = getStringX(b.fromString);
               const x2 = getStringX(b.toString);
               const y = getNoteY(b.fret);
-              const pillWidth = Math.abs(x2 - x1) + 24;
-              const pillX = Math.min(x1, x2) - 12;
+              const pillWidth = Math.abs(x2 - x1) + 26;
+              const pillX = Math.min(x1, x2) - 13;
 
               return (
                 <g>
                   <rect
                     x={pillX}
-                    y={y - 12}
+                    y={y - 13}
                     width={pillWidth}
-                    height="24"
-                    rx="12"
-                    ry="12"
+                    height="26"
+                    rx="13"
+                    ry="13"
                     fill="currentColor"
                   />
                   <text
                     x={(x1 + x2) / 2}
-                    y={y + 5}
+                    y={y}
+                    dominantBaseline="central"
                     fill="var(--app-bg, #000)"
-                    fontSize="13"
-                    fontWeight="bold"
+                    fontSize="14"
+                    fontWeight="900"
                     fontFamily="monospace"
                     textAnchor="middle"
                   >
@@ -393,21 +432,22 @@ export const Fretboard: React.FC<FretboardProps> = ({
                 <circle
                   cx={x}
                   cy={y}
-                  r="18"
+                  r="18.5"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2.2"
                 />
               )}
               {/* Solid finger dot */}
-              <circle cx={x} cy={y} r="13" fill="currentColor" />
-              {/* Inverted finger number inside dot */}
+              <circle cx={x} cy={y} r="13.5" fill="currentColor" />
+              {/* High-legibility inverted finger number */}
               {finger !== null && (
                 <text
                   x={x}
-                  y={y + 4.5}
+                  y={y}
+                  dominantBaseline="central"
                   fill="var(--app-bg, #000)"
-                  fontSize="13"
+                  fontSize="14"
                   fontWeight="900"
                   fontFamily="monospace"
                   textAnchor="middle"

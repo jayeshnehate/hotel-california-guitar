@@ -56,8 +56,18 @@ body,
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+/* GPU-Accelerated Beat Pulse on Viewport Border */
+@keyframes beatPulse {
+  0% {
+    box-shadow: inset 0 0 0 3px var(--app-fg);
+  }
+  100% {
+    box-shadow: inset 0 0 0 0px var(--app-fg);
+  }
+}
+
 .beat-pulse-active {
-  box-shadow: inset 0 0 0 2px var(--app-fg) !important;
+  animation: beatPulse 0.12s ease-out forwards;
 }
 
 /* Header */
@@ -79,7 +89,7 @@ body,
 
 .node-number {
   font-family: monospace;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 900;
   letter-spacing: 0.1em;
   opacity: 0.9;
@@ -87,7 +97,7 @@ body,
 
 .anchor-symbol {
   font-family: monospace;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
   font-weight: 900;
 }
@@ -99,6 +109,41 @@ body,
   margin-top: 4px;
 }
 
+/* Active Chord Current Banner */
+.active-chord-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 2px;
+}
+
+.active-chord-name {
+  font-family: monospace;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.measure-beat-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.measure-beat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  background-color: transparent;
+  transition: background-color 0.05s ease;
+}
+
+.measure-beat-dot.active {
+  background-color: currentColor;
+}
+
 /* Fretboard Section */
 .app-main {
   width: 100%;
@@ -108,35 +153,7 @@ body,
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 4px 0;
-}
-
-/* Rhythm Visualizer */
-.rhythm-row {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-}
-
-.rhythm-arrow-box {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid currentColor;
-  box-shadow: 2px 2px 0px 0px currentColor;
-  transition: transform 0.08s ease, background-color 0.08s ease;
-}
-
-.rhythm-arrow-box.active {
-  background-color: currentColor;
-  color: var(--app-bg);
-  transform: scale(1.08);
-  box-shadow: 3px 3px 0px 0px currentColor;
+  padding: 2px 0;
 }
 
 /* Footer Controls */
@@ -146,8 +163,8 @@ body,
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding-bottom: 8px;
+  gap: 12px;
+  padding-bottom: 6px;
 }
 
 .bpm-row {
@@ -159,7 +176,7 @@ body,
 
 .bpm-value {
   font-family: monospace;
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 900;
   letter-spacing: 0.05em;
   width: 64px;
@@ -176,7 +193,8 @@ body,
   align-items: center;
   cursor: pointer;
   box-shadow: 3px 3px 0px 0px currentColor;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
+  will-change: transform, box-shadow;
 }
 
 .brutal-btn:active {
@@ -185,24 +203,24 @@ body,
 }
 
 .brutal-btn-icon {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
 }
 
 .brutal-btn-bpm {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   font-family: monospace;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 900;
 }
 
 .brutal-btn-chord {
-  min-width: 40px;
-  height: 40px;
+  min-width: 46px;
+  height: 42px;
   padding: 0 10px;
   font-family: monospace;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 900;
 }
 
@@ -214,16 +232,16 @@ body,
 /* Large Circular Play / Timer Button */
 .play-timer-container {
   position: relative;
-  width: 96px;
-  height: 96px;
+  width: 94px;
+  height: 94px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .play-timer-btn {
-  width: 92px;
-  height: 92px;
+  width: 90px;
+  height: 90px;
   border-radius: 50%;
   border: 3.5px solid currentColor;
   background-color: var(--app-bg);
@@ -233,20 +251,13 @@ body,
   align-items: center;
   cursor: pointer;
   box-shadow: 4px 4px 0px 0px currentColor;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition: transform 0.06s ease, box-shadow 0.06s ease;
   overflow: visible;
 }
 
 .play-timer-btn:active {
   transform: translate(2px, 2px);
   box-shadow: 2px 2px 0px 0px currentColor;
-}
-
-.timer-seconds-text {
-  font-family: monospace;
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: -0.02em;
 }
 
 /* 3-Step Dots */

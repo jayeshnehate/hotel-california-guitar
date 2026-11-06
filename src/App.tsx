@@ -23,10 +23,10 @@ export const App: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<number>(60);
   const [activeChordIndex, setActiveChordIndex] = useState<number>(0);
   const [currentBeat, setCurrentBeat] = useState<number>(0);
-  const [isPulseActive, setIsPulseActive] = useState<boolean>(false);
   const [isVerificationOpen, setIsVerificationOpen] = useState<boolean>(false);
 
   const timerRef = useRef<number | null>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
 
   const activeNode: CurriculumNode = useMemo(() => {
     return CURRICULUM.find((n) => n.id === progress.activeNodeId) || CURRICULUM[0];
@@ -57,12 +57,19 @@ export const App: React.FC = () => {
     });
   }, []);
 
+  // Metronome tick: lightweight, triggering GPU animation without React state thrashing
   const handleBeat = useCallback(
     (beat: number) => {
       setCurrentBeat(beat);
-      setIsPulseActive(true);
-      window.setTimeout(() => setIsPulseActive(false), 90);
 
+      // Trigger GPU beat animation via direct DOM manipulation
+      if (viewportRef.current) {
+        viewportRef.current.classList.remove('beat-pulse-active');
+        void viewportRef.current.offsetWidth; // force reflow for instantaneous re-trigger
+        viewportRef.current.classList.add('beat-pulse-active');
+      }
+
+      // Automatically advance to the next chord every 4 beats (1 measure)
       if (displayNode.chords.length > 1 && beat === 0) {
         setActiveChordIndex((prev) => (prev + 1) % displayNode.chords.length);
       }
@@ -155,7 +162,7 @@ export const App: React.FC = () => {
   const timerStrokeDashoffset = timerCircumference - (timeLeft / 60) * timerCircumference;
 
   return (
-    <div className={`app-viewport ${isPulseActive ? 'beat-pulse-active' : ''}`}>
+    <div ref={viewportRef} className="app-viewport">
       {/* 1. TOP HEADER */}
       <header className="app-header">
         {/* Left: 4-square Grid Button */}
@@ -164,7 +171,7 @@ export const App: React.FC = () => {
           aria-label="Path Map"
           className="brutal-btn brutal-btn-icon"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
             <rect x="3" y="3" width="7" height="7" />
             <rect x="14" y="3" width="7" height="7" />
             <rect x="3" y="14" width="7" height="7" />
@@ -199,15 +206,31 @@ export const App: React.FC = () => {
           aria-label="Invert Theme"
           className="brutal-btn brutal-btn-icon"
         >
-          <svg width="22" height="22" viewBox="0 0 100 100">
+          <svg width="24" height="24" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" strokeWidth="8" />
             <path d="M50,6 A44,44 0 0,1 50,94 Z" fill="currentColor" />
           </svg>
         </button>
       </header>
 
-      {/* 2. CENTER: SVG FRETBOARD & RHYTHM VISUALIZER */}
+      {/* 2. CENTER: ACTIVE CHORD BANNER + SVG FRETBOARD + RHYTHM VISUALIZER */}
       <main className="app-main">
+        {/* Active Chord Indicator & 4-Beat Measure Progression */}
+        <div className="active-chord-banner">
+          <span className="active-chord-name">{currentChord.name}</span>
+          {displayNode.chords.length > 1 && (
+            <div className="measure-beat-dots">
+              {[0, 1, 2, 3].map((b) => (
+                <span
+                  key={b}
+                  className={`measure-beat-dot ${currentBeat === b ? 'active' : ''}`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Fretboard Diagram */}
         <Fretboard
           chord={currentChord}
           anchorFinger={displayNode.anchorFinger}
@@ -222,10 +245,12 @@ export const App: React.FC = () => {
           hasShadow={true}
         />
 
+        {/* Rhythm & Strumming Visualizer with Mode Tag */}
         <RhythmVisualizer
           pattern={displayNode.strumPattern}
           activeBeatIndex={currentBeat}
           isPlaying={isPlaying}
+          mode={displayNode.type === 'arpeggio' ? 'pluck' : 'strum'}
         />
       </main>
 
@@ -267,7 +292,6 @@ export const App: React.FC = () => {
           >
             {isPlaying ? (
               <svg width="88" height="88" viewBox="0 0 88 88" style={{ overflow: 'visible' }}>
-                {/* Background track circle */}
                 <circle
                   cx="44"
                   cy="44"
@@ -275,27 +299,27 @@ export const App: React.FC = () => {
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="3.5"
-                  opacity="0.25"
+                  opacity="0.2"
                 />
-                {/* Progress countdown arc */}
                 <circle
                   cx="44"
                   cy="44"
                   r={timerRadius}
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="4"
+                  strokeWidth="4.5"
                   strokeDasharray={timerCircumference}
                   strokeDashoffset={timerStrokeDashoffset}
                   strokeLinecap="round"
                   transform="rotate(-90 44 44)"
-                  style={{ transition: 'stroke-dashoffset 0.3s ease' }}
+                  style={{ transition: 'stroke-dashoffset 0.95s linear' }}
                 />
                 <text
                   x="44"
                   y="49"
+                  dominantBaseline="central"
                   fill="currentColor"
-                  fontSize="18"
+                  fontSize="20"
                   fontWeight="900"
                   fontFamily="monospace"
                   textAnchor="middle"
@@ -304,7 +328,7 @@ export const App: React.FC = () => {
                 </text>
               </svg>
             ) : (
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="6,3 20,12 6,21" />
               </svg>
             )}
